@@ -1,0 +1,32 @@
+div#sheet-container {
+    display: table;
+    border-collapse: collapse;
+}
+
+div.entry {
+    display: table-row;
+    float: right;
+    width: 95%;
+    border: thin solid black;
+}
+
+div.label {
+    display: table-cell;
+    padding: 5px;
+    font-weight: bold;
+    float: left;
+}
+
+div.content {
+    display: table-cell;
+    padding: 5px;
+    float: right;
+ }
+
+div#image {
+    float: left;
+}
+
+h1 {
+    text-align: right;
+}
