@@ -1,5 +1,6 @@
 (ns mech.web
-  (:require [compojure.core :refer [defroutes GET]]))
+  (:require [compojure.core :refer [defroutes GET]]
+            [compojure.route :refer [resources]]))
 
 (defn index [req]
   {:stats 200
@@ -7,4 +8,5 @@
    :body "Hello, Mech!"})
 
 (defroutes app
-  (GET "/" [] index))
+  (GET "/" [] index)
+  (resources "/"))
