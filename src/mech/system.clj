@@ -1,11 +1,27 @@
 (ns mech.system
-  (:require [org.httpkit.server :refer [run-server]]))
+  (:require [org.httpkit.server :refer [run-server]]
+            [com.stuartsierra.component :as component]
+            [mech.web]))
 
-(defn response [req]
-  {:stats 200
-   :headers {"Content-Type" "text/html"}
-   :body "Hello! from HTTP Kit"})
+(defn- start-server [handler port]
+  (let [server (run-server handler {:port port})]
+    (println (str "Started server on localhost:" port))
+    server))
+
+(defn- stop-server [server]
+  (when server
+    (server)))
+
+(defrecord MechGen []
+  component/Lifecycle
+  (start [this]
+    (assoc this :server (start-server #'mech.web/app 9009)))
+  (stop [this]
+    (stop-server (:server this))
+    (dissoc this :server)))
+
+(defn create-system []
+  (MechGen.))
 
 (defn -main [& args]
-  (run-server response {:port 9009})
-  (println "Started server on localhost:9009"))
+  (.start (create-system)))
