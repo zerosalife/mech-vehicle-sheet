@@ -3,8 +3,9 @@
   :url "http://www.github.com/zerosalife/mech-vehicle-sheet"
   :license {:name "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License"
             :url "http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en_US"}
-  :dependencies [[org.clojure/clojure "1.7.0"]]
+  :main mech.system
+  :dependencies [[org.clojure/clojure "1.7.0"]
+                 [http-kit "2.1.18"]]
   :profiles {:dev {:plugins []
                    :dependencies []
                    :source-paths ["dev"]}})
-;;;
