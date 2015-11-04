@@ -8,8 +8,21 @@
                  [org.clojure/clojurescript "1.7.145"]
                  [http-kit "2.1.18"]
                  [com.stuartsierra/component "0.2.3"]
-                 [compojure "1.4.0"]]
-  :profiles {:dev {:plugins [[cider/cider-nrepl "0.8.2"]
+                 [compojure "1.4.0"]
+                 [environ "1.0.1"]]
+  :min-lein-version "2.0.0"
+  :uberjar-name "mech-vehicle-sheet.jar"
+  :profiles {:uberjar {:source-paths ["env/prod/clj"]
+                       :hooks [leiningen.cljsbuild]
+                       :env {:production true}
+                       :aot :all
+                       :main mech.system
+                       :cljsbuild {:builds {:app
+                                            {:source-paths ["env/prod/cljs"]
+                                             :compiler {:optimizations :advanced
+                                                        :pretty-print false}}}}}
+
+             :dev {:plugins [[cider/cider-nrepl "0.8.2"]
                              [lein-cljsbuild "1.1.0"]
                              [lein-figwheel "0.4.1"]]
                    :dependencies [[reloaded.repl "0.1.0"]]
