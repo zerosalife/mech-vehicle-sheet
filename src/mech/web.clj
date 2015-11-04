@@ -1,6 +1,6 @@
 (ns mech.web
-  (:require [compojure.core :refer [defroutes GET]]
-            [compojure.route :refer [resources]]))
+  (:require [compojure.core :refer [defroutes GET routes]]
+            [compojure.route :refer [resources not-found]]))
 
 (defn- wrap-root-index [handler]
   (fn [req]
@@ -10,6 +10,12 @@
                    "/index.html"
                    %)))))
 
+(defn- not-found-page [req]
+  {:status 404
+   :headers {"Content-Type" "text/html"}
+   :body "File not found."})
+
 (defroutes app
-  (-> (resources "/")
+  (-> (routes (resources "/")
+              (not-found not-found-page))
       (wrap-root-index)))
