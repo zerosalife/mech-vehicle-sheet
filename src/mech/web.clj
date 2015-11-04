@@ -2,11 +2,14 @@
   (:require [compojure.core :refer [defroutes GET]]
             [compojure.route :refer [resources]]))
 
-(defn index [req]
-  {:stats 200
-   :headers {"Content-Type" "text/html"}
-   :body "Hello, Mech!"})
+(defn- wrap-root-index [handler]
+  (fn [req]
+    (handler
+     (update-in req [:uri]
+                #(if (= "/" %)
+                   "/index.html"
+                   %)))))
 
 (defroutes app
-  (GET "/" [] index)
-  (resources "/"))
+  (-> (resources "/")
+      (wrap-root-index)))
