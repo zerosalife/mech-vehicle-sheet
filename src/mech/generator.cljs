@@ -50,26 +50,31 @@
 (defn mech-vehicle-params []
   (let [key (rand-nth mech-vehicle-type-keys)
         height ((key mech-vehicle-heights))
-        power (+ (u/rand-float -100 100) (* height 100))]
+        horse-power (+ (u/rand-float -100 100) (* height 100))
+        power (* (rand-nth [2 3 4 5]) horse-power)]
     {:height (goog.string.format "%.1f m" height)
      :weight (goog.string.format "%.0f tonnes"
-                      (* height ((key mech-vehicle-weight-ratios))))
-     :power (goog.string.format "%.0f hp"
-                     power)
+                                 (* height ((key mech-vehicle-weight-ratios))))
+     :horse-power (goog.string.format "%.0f hp"
+                                horse-power)
+     :power (goog.string.format "%s-%.0f%s"
+                                      (rand-nth u/letters-upper-case)
+                                      power
+                                      (rand-nth u/alphanumeric-upper-case))
      :primary-movement (goog.string.format "%s (%.0f kph)"
-                                (:primary-movement
-                                 (key mech-vehicle-movement-types))
-                                (+
-                                 (/ power 10)
-                                 ((:primary-movement
-                                   (key mech-vehicle-movement-modifiers)))))
+                                           (:primary-movement
+                                            (key mech-vehicle-movement-types))
+                                           (+
+                                            (/ horse-power 10)
+                                            ((:primary-movement
+                                              (key mech-vehicle-movement-modifiers)))))
      :secondary-movement (goog.string.format "%s (%.0f kph)"
-                                  (:secondary-movement
-                                   (key mech-vehicle-movement-types))
-                                  (+
-                                   (/ power 10)
-                                   ((:secondary-movement
-                                     (key mech-vehicle-movement-modifiers)))))}))
+                                             (:secondary-movement
+                                              (key mech-vehicle-movement-types))
+                                             (+
+                                              (/ horse-power 10)
+                                              ((:secondary-movement
+                                                (key mech-vehicle-movement-modifiers)))))}))
 
 (def mech-types ["Assault" "Combat" "Aerospace" "Urban Combat" "Construction" "General Purpose"])
 
@@ -114,6 +119,7 @@
         {height :height
          weight :weight
          power :power
+         horse-power :horse-power
          primary-movement :primary-movement
          secondary-movement :secondary-movement} (mech-vehicle-params)]
     {:image image
@@ -125,6 +131,6 @@
      :height height
      :weight weight
      :power power
-     :horse-power power
+     :horse-power horse-power
      :primary-movement primary-movement
      :secondary-movement secondary-movement}))

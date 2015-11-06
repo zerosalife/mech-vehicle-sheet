@@ -61,6 +61,13 @@
          (d/div {:className "content"}
                 (:power mech))))
 
+(q/defcomponent HorsePower [mech]
+  (d/div {:id "horse-power" :className "entry"}
+         (d/div {:className "label"}
+                "Horsepower")
+         (d/div {:className "content"}
+                (:horse-power mech))))
+
 (q/defcomponent PrimaryMovement [mech]
   (d/div {:id "primary-movement" :className "entry"}
          (d/div {:className "label"}
@@ -88,6 +95,7 @@
          (Height mech)
          (Weight mech)
          (Power mech)
+         (HorsePower mech)
          (PrimaryMovement mech)
          (SecondaryMovement mech)))
 
