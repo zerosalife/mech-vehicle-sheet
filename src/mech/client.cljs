@@ -1,18 +1,9 @@
 (ns mech.client
   (:require [quiescent.core :as q]
-            [quiescent.dom :as d]))
+            [quiescent.dom :as d]
+            [mech.generator :as g]))
 
-(def mech {:image "//placekitten.com/g/480/640"
-           :code-name "Alligator"
-           :production-code "BOHR-8S-AAG"
-           :production-type "Mass Production"
-           :manufacturer "Bohr Pharmacorp"
-           :description "A scout/recon Rig"
-           :height "5.3 m"
-           :weight "7 tonnes"
-           :power "7000 hp"
-           :primary-movement "Walk (56 kph)"
-           :secondary-movement "Rolling (67 kph)"})
+(def mech (g/mech-specifications))
 
 (q/defcomponent CodeName [mech]
   (d/div {:id "code-name" :className "entry"}
