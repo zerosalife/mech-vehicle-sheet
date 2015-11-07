@@ -98,6 +98,51 @@
 
 (defn mech-production-type [] (rand-nth mech-production-types))
 
+(defn mech-weapon-types [] [{:type :lmg
+                             :label "Light Machine Gun"
+                             :prefixes ["A" "M" "P"]
+                             :ammo-multiplier 150}
+                            {:type :smg
+                             :label "Submachine Gun"
+                             :prefixes ["A" "M" "P"]
+                             :ammo-multiplier 150}
+                            {:type :hmg
+                             :label "Heavy Machine Gun"
+                             :prefixes ["A" "M" "P"]
+                             :ammo-multiplier 150}
+                            {:type :sg
+                             :label "Shotgun"
+                             :prefixes ["A" "M" "P"]
+                             :ammo-multiplier 1.5}
+                            {:type :pbr
+                             :label "Pillbox Rocket Launcher"
+                             :prefixes ["P"]
+                             :ammo-multiplier 3}
+                            {:type :gl
+                             :label "Grenade Launcher"
+                             :prefixes ["M" "P"]
+                             :ammo-multiplier 3}
+                            {:type :cg
+                             :label "Chaingun"
+                             :prefixes ["A" "M" "P" "C"]
+                             :ammo-multiplier 150}])
+
+(def mech-weapon-base [2 4 6 8 16 32])
+
+(defn mech-weapon []
+  (let [w (rand-nth (mech-weapon-types))
+        base-number (rand-nth mech-weapon-base)
+        base-label (:label w)
+        prefix (rand-nth (:prefixes w))
+        manufacturer (rand-nth mech-manufacturer-codes)
+        ammo (* (:ammo-multiplier w) base-number)
+        f (rand-nth [+ -])
+        prefix-number (f (rand-int 20) (* ammo (* (rand-int 2) base-number)))
+        loadout (u/join-with-spaces ammo "rounds")]
+    (-> w
+        (assoc :loadout loadout)
+        (assoc :label (goog.string.format "%s %s%2.0f %s" manufacturer prefix prefix-number base-label)))))
+
 (def mech-hardpoint-types {:rig
                            {:head []
                             :torso []
@@ -107,7 +152,7 @@
                             :rt-shoulder []
                             :legs []}})
 
- (def mech-placeholder-image "//placekitten.com/g/480/640")
+(def mech-placeholder-image "//placekitten.com/g/480/640")
 
 (defn mech-specifications []
   (let [image mech-placeholder-image
@@ -133,4 +178,10 @@
      :power power
      :horse-power horse-power
      :primary-movement primary-movement
-     :secondary-movement secondary-movement}))
+     :secondary-movement secondary-movement
+     :weapons [(let [w (mech-weapon)]
+                 {:label (:label w)
+                  :loadout (:loadout w)})
+               (let [w (mech-weapon)]
+                 {:label (:label w)
+                  :loadout (:loadout w)})]}))

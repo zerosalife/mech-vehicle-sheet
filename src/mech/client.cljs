@@ -82,11 +82,25 @@
          (d/div {:className "content"}
                 (:secondary-movement mech))))
 
+(q/defcomponent Weapon [weapon]
+  (d/div {:id "weapon" :className "entry"}
+         (d/div {:className "label"}
+                (:label weapon))
+         (d/div {:className "content"}
+                (:loadout weapon))))
+
+(q/defcomponent MechPayload [mech]
+  (apply d/div {:id "sheet-container"}
+         (map #(Weapon %) (:weapons mech))))
+
+(q/defcomponent PayloadTitle [mech]
+  (d/h1 {} "Weapon Payload"))
+
 (q/defcomponent MechImage [mech]
   (d/div {:id "image"}
          (d/img {:src (:image mech)})))
 
-(q/defcomponent MechSheet [mech]
+(q/defcomponent MechSpecifications [mech]
   (d/div {:id "sheet-container"}
          (CodeName mech)
          (ProductionCode mech)
@@ -102,7 +116,9 @@
 (q/defcomponent Mech [mech]
   (d/div {}
          (MechImage mech)
-         (MechSheet mech)))
+         (MechSpecifications mech)
+         (PayloadTitle mech)
+         (MechPayload mech)))
 
 (q/render (Mech mech)
           (.getElementById js/document "main"))
