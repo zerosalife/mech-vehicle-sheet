@@ -10,7 +10,8 @@
                  [com.stuartsierra/component "0.2.3"]
                  [compojure "1.4.0"]
                  [quiescent "0.2.0-alpha1"]
-                 [environ "1.0.1"]]
+                 [environ "1.0.1"]
+                 [bk/ring-gzip "0.1.1"]]
   :plugins [[lein-cljsbuild "1.1.1-SNAPSHOT"]]
   :min-lein-version "2.0.0"
   :uberjar-name "mech-vehicle-sheet.jar"

@@ -1,6 +1,7 @@
 (ns mech.web
   (:require [compojure.core :refer [defroutes GET routes]]
-            [compojure.route :refer [resources not-found]]))
+            [compojure.route :refer [resources not-found]]
+            [ring.middleware.gzip :as gz]))
 
 (defn- wrap-root-index [handler]
   (fn [req]
@@ -18,4 +19,5 @@
 (defroutes app
   (-> (routes (resources "/")
               (not-found not-found-page))
-      (wrap-root-index)))
+      (wrap-root-index)
+      (gz/wrap-gzip)))
