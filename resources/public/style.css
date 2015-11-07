@@ -1,11 +1,12 @@
 div#sheet-container {
-    display: table;
+    display: flex;
+    flex-direction: column;
+    min-width: 100px;
     border-collapse: collapse;
     border: thin solid black;
 }
 
 div.entry {
-    display: table-row;
     float: right;
     width: 100%;
     border: thin solid black;
@@ -13,14 +14,12 @@ div.entry {
 }
 
 div.label {
-    display: table-cell;
     padding: 5px;
     font-weight: bold;
     float: left;
 }
 
 div.content {
-    display: table-cell;
     padding: 5px;
     float: right;
  }
