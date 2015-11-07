@@ -137,11 +137,11 @@
         manufacturer (rand-nth mech-manufacturer-codes)
         ammo (* (:ammo-multiplier w) base-number)
         f (rand-nth [+ -])
-        prefix-number (f (rand-int 20) (* ammo (* (rand-int 2) base-number)))
+        prefix-number (Math/abs (f (* ammo (* (rand-int 2) base-number)) (rand-int 20)))
         loadout (u/join-with-spaces ammo "rounds")]
     (-> w
         (assoc :loadout loadout)
-        (assoc :label (goog.string.format "%s %s%2.0f %s" manufacturer prefix prefix-number base-label)))))
+        (assoc :label (goog.string.format "%s %s-%.0f %s" manufacturer prefix prefix-number base-label)))))
 
 (def mech-hardpoint-types {:rig
                            {:head []
