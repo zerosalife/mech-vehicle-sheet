@@ -98,21 +98,23 @@
 
 (defn mech-production-type [] (rand-nth mech-production-types))
 
+(def default-weapon-prefixes ["A" "M" "P" "E" "X"])
+
 (defn mech-weapon-types [] [{:type :lmg
                              :label "Light Machine Gun"
-                             :prefixes ["A" "M" "P"]
+                             :prefixes default-weapon-prefixes
                              :ammo-multiplier 150}
                             {:type :smg
                              :label "Submachine Gun"
-                             :prefixes ["A" "M" "P"]
+                             :prefixes default-weapon-prefixes
                              :ammo-multiplier 150}
                             {:type :hmg
                              :label "Heavy Machine Gun"
-                             :prefixes ["A" "M" "P"]
+                             :prefixes default-weapon-prefixes
                              :ammo-multiplier 150}
                             {:type :sg
                              :label "Shotgun"
-                             :prefixes ["A" "M" "P"]
+                             :prefixes default-weapon-prefixes
                              :ammo-multiplier 1.5}
                             {:type :pbr
                              :label "Pillbox Rocket Launcher"
@@ -122,35 +124,66 @@
                              :label "Grenade Launcher"
                              :prefixes ["M" "P"]
                              :ammo-multiplier 3}
+                            {:type :cs
+                             :label "Chainsword"
+                             :prefixes (conj default-weapon-prefixes "C")
+                             :ammo-multiplier 10}
                             {:type :cg
                              :label "Chaingun"
-                             :prefixes ["A" "M" "P" "C"]
+                             :prefixes (conj default-weapon-prefixes "C")
                              :ammo-multiplier 150}])
 
-(def mech-weapon-base [2 4 6 8 16 32])
+(def mech-hardpoint-weapon-types {:rig
+                                  {:head []
+                                   :torso [:pbr]
+                                   :lt-arm [:cg :lmg :hmg :sg :gl :cs :smg]
+                                   :lt-shoulder [:pbr :gl]
+                                   :rt-arm [:cg :lmg :hmg :sg :gl :cs :smg]
+                                   :rt-shoulder [:pbr :gl]
+                                   :legs []}})
+
+(def weapon-mounting-points [:torso
+                             :lt-arm
+                             :lt-shoulder
+                             :rt-arm
+                             :rt-shoulder])
+
+(def mech-hardpoint-labels {:head "Head"
+                            :torso "Torso"
+                            :lt-arm "Left Hand"
+                            :lt-shoulder "Left Shoulder"
+                            :rt-arm "Right Hand"
+                            :rt-shoulder "Right Shoulder"
+                            :legs "Legs"})
+
+(def mech-weapon-base-number [2 4 6 8 16 32])
+
+(defn mountable? [weapon hardpoint]
+  (let [hardpoints (:rig mech-hardpoint-weapon-types)]
+    (contains? (set (hardpoint hardpoints)) (:type weapon))))
+
+(defn mech-hardpoint-weapon-mount [weapon]
+  (let [hardpoint (rand-nth weapon-mounting-points)]
+    (if (mountable? weapon hardpoint)
+      {:hardpoint hardpoint
+       :label (hardpoint mech-hardpoint-labels)}
+      (mech-hardpoint-weapon-mount weapon))))
 
 (defn mech-weapon []
   (let [w (rand-nth (mech-weapon-types))
-        base-number (rand-nth mech-weapon-base)
+        base-number (rand-nth mech-weapon-base-number)
         base-label (:label w)
         prefix (rand-nth (:prefixes w))
         manufacturer (rand-nth mech-manufacturer-codes)
         ammo (* (:ammo-multiplier w) base-number)
         f (rand-nth [+ -])
         prefix-number (Math/abs (f (* ammo (* (rand-int 2) base-number)) (rand-int 20)))
-        loadout (u/join-with-spaces ammo "rounds")]
+        loadout (u/join-with-spaces ammo "rounds")
+        hardpoint (mech-hardpoint-weapon-mount w)]
     (-> w
         (assoc :loadout loadout)
+        (assoc :hardpoint hardpoint)
         (assoc :label (goog.string.format "%s %s-%.0f %s" manufacturer prefix prefix-number base-label)))))
-
-(def mech-hardpoint-types {:rig
-                           {:head []
-                            :torso []
-                            :lt-arm []
-                            :lt-shoulder []
-                            :rt-arm []
-                            :rt-shoulder []
-                            :legs []}})
 
 (def mech-placeholder-image "//placekitten.com/g/480/640")
 
@@ -181,7 +214,9 @@
      :secondary-movement secondary-movement
      :weapons [(let [w (mech-weapon)]
                  {:label (:label w)
+                  :hardpoint (:hardpoint w)
                   :loadout (:loadout w)})
                (let [w (mech-weapon)]
                  {:label (:label w)
+                  :hardpoint (:hardpoint w)
                   :loadout (:loadout w)})]}))

@@ -22,6 +22,7 @@ div.label {
 div.content {
     padding: 5px;
     float: right;
+    clear: right;
  }
 
 div#image {

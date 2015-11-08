@@ -87,7 +87,9 @@
          (d/div {:className "label"}
                 (:label weapon))
          (d/div {:className "content"}
-                (:loadout weapon))))
+                (:loadout weapon))
+         (d/div {:className "content"}
+                (:label (:hardpoint weapon)))))
 
 (q/defcomponent MechPayload [mech]
   (apply d/div {:id "sheet-container"}
