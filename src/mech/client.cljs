@@ -86,8 +86,9 @@
   (d/div {:id "weapon" :className "entry"}
          (d/div {:className "label"}
                 (:label weapon))
-         (d/div {:className "content"}
-                (:loadout weapon))
+         (when-not (= 0 (:ammo weapon))
+           (d/div {:className "content"}
+                  (:loadout weapon)))
          (d/div {:className "content"}
                 (:label (:hardpoint weapon)))))
 
