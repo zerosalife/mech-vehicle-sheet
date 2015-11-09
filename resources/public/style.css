@@ -34,3 +34,12 @@ h1 {
     font-family: "PT Serif", serif;
     text-align: right;
 }
+
+footer {
+    clear: both;
+    text-align: center;
+}
+
+footer a {
+    font-weight: bold;
+}
