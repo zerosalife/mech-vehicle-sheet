@@ -78,7 +78,7 @@
 
 (def mech-types ["Assault" "Combat" "Aerospace" "Urban Combat" "Construction" "General Purpose"])
 
-(def mech-manufacturer-codes ["UCS" "ONION" "FCS" "WACS" "WSSA" "OBSF" "ACSF" "NCS" "VFK" "EPAN" "VCS"])
+(def mech-manufacturer-codes ["UCS" "ONION" "FCS" "WACS" "WSSA" "OBSF" "ACSF" "NCS" "VFK" "EPAN" "VCS" "HAAS"])
 
 (def mech-serial-number-length [1 2])
 
@@ -196,7 +196,7 @@
 
 (defn mech-specifications []
   (let [image mech-placeholder-image
-        code-name (clojure.string/capitalize (rand-nth u/animal-names))
+        code-name  (u/capitalize-words (rand-nth u/animal-names))
         production-code (mech-production-code)
         production-type (mech-production-type)
         manufacturer (corp-gen)

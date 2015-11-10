@@ -26,5 +26,10 @@
   (let [strs (remove-empty-strings strs)]
     (clojure.string/join "-" (vec strs))))
 
+(defn capitalize-words [s]
+  (->> (clojure.string/split s #"\b")
+       (map clojure.string/capitalize)
+       clojure.string/join))
+
 (defn rand-float [min max]
   (+ min (rand (- max min))))
