@@ -15,13 +15,13 @@
 (defn corp-proper-name []
   (rand-nth ["Haas" "Maas" "Aztlan" "Fuchi" "Ares" "Olympic" "Integra" "Arkady" "Panafrican" "Panamerican" "Eternium" "MIRAI" "Lucent" "Lucid" "United" "Orbital" "Chyron" "Fury" "Ayanda" "MOCO" "Monad" "Talismyn" "NERV" "Eigen" "Solidus" "Animus" "Tsukiji" "Wei" "Macron" "Hua" "Moto" "Huaneng" "Sinopec" "Cheung" "Wuhan" "Li" "Fung" "Esprit" "Wheelock" "DaTang" "Maanshan" "Shenzhen" "SAIC" "Yanzhou" "Kweichow" "Moutai" "Yibin" "Bohr" "Pagani" "CAPSULE" "aurora" "BNC" "Saito" "WuXing" "Shinra" "Oesterheim" "Maersk" "Atari" "Renraku" "Matsuhama" "Shimago-Domínguez" "Gibson" "Mitsubishi" "Findley" "Shiawase" "Alphabet" "Maxwell"]))
 
-(defn corp-gen []
+(defn corp-gen [specs]
   (let [f (rand-nth [#(corp-proper-name)
                      #(u/join-with-spaces
                        (corp-proper-name)
                        (u/join-without-spaces (corp-name-prefix) (corp-name-suffix)))
                      #(u/join-with-spaces (corp-proper-name) (corp-name-suffix-standalone))])]
-    (f)))
+    (assoc specs :manufacturer (f))))
 
 (def mech-classes ["Heavy" "Light" "Medium"])
 
@@ -29,9 +29,9 @@
 
 (def mech-vehicle-descriptions {:rig (rand-nth ["General Purpose Rig" "Scout/Recon Rig"])})
 
-(defn mech-vehicle-description []
+(defn mech-vehicle-description [specs]
   (let [key (rand-nth mech-vehicle-type-keys)]
-    (key mech-vehicle-descriptions)))
+    (assoc specs :description (key mech-vehicle-descriptions))))
 
 (def mech-vehicle-heights {:rig #(u/rand-float 3.7 5.5)})
 
@@ -47,34 +47,43 @@
    {:primary-movement "Walk"
     :secondary-movement "Rolling"}})
 
-(defn mech-vehicle-params []
+(defn mech-vehicle-params [specs]
   (let [key (rand-nth mech-vehicle-type-keys)
         height ((key mech-vehicle-heights))
         horse-power (+ (u/rand-float -100 100) (* height 100))
         power (* (rand-nth [2 3 4 5]) horse-power)]
-    {:height (goog.string.format "%.1f m" height)
-     :weight (goog.string.format "%.0f tonnes"
-                                 (* height ((key mech-vehicle-weight-ratios))))
-     :horse-power (goog.string.format "%.0f hp"
-                                horse-power)
-     :power (goog.string.format "%s-%.0f%s"
-                                      (rand-nth u/letters-upper-case)
-                                      power
-                                      (rand-nth u/alphanumeric-upper-case))
-     :primary-movement (goog.string.format "%s (%.0f kph)"
-                                           (:primary-movement
-                                            (key mech-vehicle-movement-types))
-                                           (+
-                                            (/ horse-power 10)
-                                            ((:primary-movement
-                                              (key mech-vehicle-movement-modifiers)))))
-     :secondary-movement (goog.string.format "%s (%.0f kph)"
-                                             (:secondary-movement
-                                              (key mech-vehicle-movement-types))
-                                             (+
-                                              (/ horse-power 10)
-                                              ((:secondary-movement
-                                                (key mech-vehicle-movement-modifiers)))))}))
+    (merge
+     specs
+     {:height (goog.string.format
+               "%.1f m"
+               height)
+      :weight (goog.string.format
+               "%.0f tonnes"
+               (* height ((key mech-vehicle-weight-ratios))))
+      :horse-power (goog.string.format
+                    "%.0f hp"
+                    horse-power)
+      :power (goog.string.format
+              "%s-%.0f%s"
+              (rand-nth u/letters-upper-case)
+              power
+              (rand-nth u/alphanumeric-upper-case))
+      :primary-movement (goog.string.format
+                         "%s (%.0f kph)"
+                         (:primary-movement
+                          (key mech-vehicle-movement-types))
+                         (+
+                          (/ horse-power 10)
+                          ((:primary-movement
+                            (key mech-vehicle-movement-modifiers)))))
+      :secondary-movement (goog.string.format
+                           "%s (%.0f kph)"
+                           (:secondary-movement
+                            (key mech-vehicle-movement-types))
+                           (+
+                            (/ horse-power 10)
+                            ((:secondary-movement
+                              (key mech-vehicle-movement-modifiers)))))})))
 
 (def mech-types ["Assault" "Combat" "Aerospace" "Urban Combat" "Construction" "General Purpose"])
 
@@ -82,21 +91,22 @@
 
 (def mech-serial-number-length [1 2])
 
-(defn mech-production-code []
+(defn mech-production-code [specs]
   (let [manufacturer (apply str (take 4 (repeatedly #(rand-nth u/letters-upper-case))))
         serial-l (rand-nth mech-serial-number-length)
         serial (apply str (take serial-l (repeatedly #(rand-nth u/numbers))))
         series (apply str (take 2 (repeatedly #(rand-nth u/letters-upper-case))))
         purpose (apply str (take 3 (repeatedly #(rand-nth u/letters-upper-case))))]
-    (goog.string.format "%s-%s%s-%s"
-             manufacturer
-             serial
-             series
-             purpose)))
+    (assoc specs :production-code (goog.string.format "%s-%s%s-%s"
+                                                      manufacturer
+                                                      serial
+                                                      series
+                                                      purpose))))
 
 (def mech-production-types ["Mass Production" "Limited Production" "Experimental"])
 
-(defn mech-production-type [] (rand-nth mech-production-types))
+(defn mech-production-type [specs]
+  (assoc specs :production-type (rand-nth mech-production-types)))
 
 (def default-weapon-prefixes ["A" "M" "P" "E" "X"])
 
@@ -146,11 +156,24 @@
                                    :rt-shoulder [:pbr :gl :rg]
                                    :legs []}})
 
-(def weapon-mounting-points (atom #{:torso
-                                    :lt-arm
-                                    :lt-shoulder
-                                    :rt-arm
-                                    :rt-shoulder}))
+(enable-console-print!)
+
+(def mech-weapon-hardpoint-types
+  {:pbr #{:lt-shoulder :rt-shoulder}
+   :rg #{:torso :lt-shoulder :rt-shoulder}
+   :cg #{:lt-arm :rt-arm}
+   :lmg #{:lt-arm :rt-arm}
+   :hmg #{:lt-arm :rt-arm}
+   :sg #{:lt-arm :rt-arm}
+   :gl #{:lt-arm :rt-arm :lt-shoulder :rt-shoulder}
+   :cs #{:lt-arm :rt-arm}
+   :smg #{:lt-arm :rt-arm}})
+
+(def weapon-mounting-points (set [:torso
+                                  :lt-arm
+                                  :lt-shoulder
+                                  :rt-arm
+                                  :rt-shoulder]))
 
 (def mech-hardpoint-labels {:head "Head"
                             :torso "Torso"
@@ -162,20 +185,11 @@
 
 (def mech-weapon-base-number [2 4 6 8 16 32])
 
-(defn mountable? [weapon hardpoint]
-  (let [hardpoints (:rig mech-hardpoint-weapon-types)]
-    (contains? (set (hardpoint hardpoints)) (:type weapon))))
+(let [poss #{:lt-arm :rt-arm}
+      available #{:torso :lt-arm :lt-shoulder :rt-shoulder}]
+  (filter poss available))
 
-(defn mech-hardpoint-weapon-mount [weapon hardpoints]
-  (let [hardpoint (rand-nth (seq @hardpoints))]
-    (if (mountable? weapon hardpoint)
-      (do
-        (swap! hardpoints #(disj % hardpoint))
-        {:hardpoint hardpoint
-         :label (hardpoint mech-hardpoint-labels)})
-      (mech-hardpoint-weapon-mount weapon hardpoints))))
-
-(defn mech-weapon [hardpoints]
+(defn mech-weapon [specs]
   (let [w (rand-nth (mech-weapon-types))
         base-number (rand-nth mech-weapon-base-number)
         base-label (:label w)
@@ -185,47 +199,38 @@
         f (rand-nth [+ -])
         prefix-number (Math/abs (f (* ammo (* (rand-int 2) base-number)) (rand-int 20)))
         loadout (u/join-with-spaces ammo "rounds")
-        hardpoint (mech-hardpoint-weapon-mount w hardpoints)]
-    (-> w
-        (assoc :loadout loadout)
-        (assoc :hardpoint hardpoint)
-        (assoc :ammo ammo)
-        (assoc :label (goog.string.format "%s %s-%.0f %s" manufacturer prefix prefix-number base-label)))))
+        hardpoint (rand-nth
+                   (seq (filter (get mech-weapon-hardpoint-types (:type w))
+                                (:mounting-points specs))))
+        hardpoint-map {:hardpoint hardpoint
+                       :label (hardpoint mech-hardpoint-labels)}]
+    (-> specs
+        (assoc :weapons
+               (conj
+                (:weapons specs)
+                (-> w
+                    (assoc :loadout loadout)
+                    (assoc :hardpoint hardpoint-map)
+                    (assoc :ammo ammo)
+                    (assoc :label (goog.string.format "%s %s-%.0f %s" manufacturer prefix prefix-number base-label)))))
+        (assoc :mounting-points (disj (:mounting-points specs) hardpoint)))))
 
 (def mech-placeholder-image "//placekitten.com/g/480/640")
 
+(defn mech-base-specs []
+  {:image mech-placeholder-image
+   :code-name (u/capitalize-words (rand-nth u/animal-names))
+   :mounting-points weapon-mounting-points
+   :weapons []})
+
 (defn mech-specifications []
-  (let [image mech-placeholder-image
-        code-name  (u/capitalize-words (rand-nth u/animal-names))
-        production-code (mech-production-code)
-        production-type (mech-production-type)
-        manufacturer (corp-gen)
-        description (mech-vehicle-description)
-        {height :height
-         weight :weight
-         power :power
-         horse-power :horse-power
-         primary-movement :primary-movement
-         secondary-movement :secondary-movement} (mech-vehicle-params)]
-    {:image image
-     :code-name code-name
-     :production-code production-code
-     :production-type production-type
-     :manufacturer manufacturer
-     :description description
-     :height height
-     :weight weight
-     :power power
-     :horse-power horse-power
-     :primary-movement primary-movement
-     :secondary-movement secondary-movement
-     :weapons [(let [w (mech-weapon weapon-mounting-points)]
-                 {:label (:label w)
-                  :hardpoint (:hardpoint w)
-                  :ammo (:ammo w)
-                  :loadout (:loadout w)})
-               (let [w (mech-weapon weapon-mounting-points)]
-                 {:label (:label w)
-                  :hardpoint (:hardpoint w)
-                  :ammo (:ammo w)
-                  :loadout (:loadout w)})]}))
+  (let [specs (mech-base-specs)]
+    (-> specs
+        mech-production-code
+        mech-production-type
+        corp-gen
+        mech-vehicle-description
+        mech-vehicle-params
+        mech-vehicle-params
+        mech-weapon
+        mech-weapon)))
