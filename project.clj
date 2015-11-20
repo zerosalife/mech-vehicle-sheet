@@ -34,7 +34,7 @@
                                          :figwheel true
                                          :compiler {:output-to "target/classes/public/app.js"
                                                     :output-dir "target/classes/public/out"
-                                                    :main "mech.client"
+                                                    :main "mech.view"
                                                     :asset-path "/out"
                                                     :optimizations :none
                                                     :recompile-dependents true

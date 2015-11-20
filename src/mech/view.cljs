@@ -1,4 +1,4 @@
-(ns mech.client
+(ns mech.view
   (:require [quiescent.core :as q]
             [quiescent.dom :as d]
             [mech.generator :as g]))
