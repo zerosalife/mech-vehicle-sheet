@@ -1,5 +1,6 @@
 (ns mech.generator
   (:require [mech.util :as u]
+            [mech.image :as i]
             [clojure.string]
             [goog.string.format]))
 
@@ -215,10 +216,8 @@
                     (assoc :label (goog.string.format "%s %s-%.0f %s" manufacturer prefix prefix-number base-label)))))
         (assoc :mounting-points (disj (:mounting-points specs) hardpoint)))))
 
-(def mech-placeholder-image "//placekitten.com/g/480/640")
-
 (defn mech-base-specs []
-  {:image mech-placeholder-image
+  {:image (i/mech-image)
    :code-name (u/capitalize-words (rand-nth u/animal-names))
    :mounting-points weapon-mounting-points
    :weapons []})

@@ -99,9 +99,54 @@
 (q/defcomponent PayloadTitle [mech]
   (d/h1 {} "Weapon Payload"))
 
+(defn placeholder [mech key]
+  (let [image (:image mech)
+        part (get image key)
+        base (:base image)
+        x (* (:schema-x part) base)
+        y (* (:schema-y part) base)]
+    (d/g {} (d/rect {:x x
+                     :y y
+                     :width (* (:schema-width part) base)
+                     :height  (* (:schema-height part) base)
+                     :fill (:color part)})
+         (d/text {:x (+ x 40)
+                  :y (+ y 40)
+                  :fill "black"}
+                 (:title part)))))
+
+(q/defcomponent MechRightArm [mech]
+  (placeholder mech :right-arm))
+
+(q/defcomponent MechLeftArm [mech]
+  (placeholder mech :left-arm))
+
+(q/defcomponent MechRightShoulder [mech]
+  (placeholder mech :right-shoulder))
+
+(q/defcomponent MechLeftShoulder [mech]
+  (placeholder mech :left-shoulder))
+
+(q/defcomponent MechLegs [mech]
+  (placeholder mech :legs))
+
+(q/defcomponent MechTorso [mech]
+  (placeholder mech :torso))
+
+(q/defcomponent MechHead [mech]
+  (placeholder mech :head))
+
 (q/defcomponent MechImage [mech]
   (d/div {:id "image"}
-         (d/img {:src (:image mech)})))
+         (d/svg {:width 480
+                 :height 640}
+                (MechTorso mech)
+                (MechLegs mech)
+                (MechLeftShoulder mech)
+                (MechRightShoulder mech)
+                (MechLeftArm mech)
+                (MechRightArm mech)
+                (MechHead mech))))
 
 (q/defcomponent MechSpecifications [mech]
   (d/div {:id "sheet-container"}
